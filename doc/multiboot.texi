@@ -1553,26 +1553,31 @@ Multiboot2-compliant boot loader and for reference to how to implement a
 Multiboot2 kernel. The source files can be found under the directory
 @file{doc} in the Multiboot2 source distribution.
 
-The kernel @file{kernel} consists of only three files: @file{boot.S},
-@file{kernel.c} and @file{multiboot2.h}. The assembly source
-@file{boot.S} is written in GAS (@pxref{Top, , GNU assembler, as.info,
-The GNU assembler}), and contains the Multiboot2 information structure to
-comply with the specification. When a Multiboot2-compliant boot loader
-loads and execute it, it initialize the stack pointer and @code{EFLAGS},
-and then call the function @code{cmain} defined in @file{kernel.c}. If
-@code{cmain} returns to the callee, then it shows a message to inform
-the user of the halt state and stops forever until you push the reset
-key. The file @file{kernel.c} contains the function @code{cmain},
-which checks if the magic number passed by the boot loader is valid and
-so on, and some functions to print messages on the screen. The file
-@file{multiboot2.h} defines some macros, such as the magic number for the
-Multiboot2 header, the Multiboot2 header structure and the Multiboot2
-information structure.
+The kernel @file{kernel} consists of only three files:
+@file{boot_i386.S} or @file{boot_mips.S} (depending on the kernel
+architecture), @file{kernel.c}, and @file{multiboot2.h}. The assembly
+sources @file{boot_i386.S} and @file{boot_mips.S} are written in GAS
+(@pxref{Top, , GNU assembler, as.info, The GNU assembler}) and
+contain the Multiboot2 information structure to comply with the
+specification. When a Multiboot2-compliant boot loader loads and
+executes @file{boot_*.S}, it initializes the stack pointer and
+@code{EFLAGS}, and then calls the function @code{cmain} defined in
+@file{kernel.c}.
+
+If @code{cmain} returns to the callee, then it shows a message to
+inform the user of the halt state and stops forever until you push the
+reset key. The file @file{kernel.c} contains the function
+@code{cmain}, which checks if the magic number passed by the boot
+loader is valid and so on, and some functions to print messages on the
+screen. The file @file{multiboot2.h} defines some macros, such as the
+magic number for the Multiboot2 header, the Multiboot2 header
+structure and the Multiboot2 information structure.
 
 @menu
-* multiboot2.h::                 
-* boot.S::                      
-* kernel.c::                    
+* multiboot2.h::
+* boot_i386.S::
+* boot_mips.S::
+* kernel.c::
 * Other Multiboot2 kernels::
 @end menu
 
@@ -1587,13 +1592,23 @@ This is the source code in the file @file{multiboot2.h}:
 @end example
 
 
-@node boot.S
-@subsection boot.S
+@node boot_i386.S
+@subsection boot_i386.S
 
-In the file @file{boot.S}:
+In the file @file{boot_i386.S}:
 
 @example
-@include boot.S.texi
+@include boot_i386.S.texi
+@end example
+
+
+@node boot_mips.S
+@subsection boot_mips.S
+
+In the file @file{boot_mips.S}:
+
+@example
+@include boot_mips.S.texi
 @end example
 
 

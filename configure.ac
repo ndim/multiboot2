@@ -32,11 +32,30 @@ dnl Because recent automake complains about AS, set it here.
 CCAS="$CC"
 AC_SUBST(CCAS)
 
-dnl Build the example Multiboot kernel.
-AC_ARG_ENABLE(example-kernel,
-  [  --enable-example-kernel
-                          build the example Multiboot kernel])
-AM_CONDITIONAL(BUILD_EXAMPLE_KERNEL, test "x$enable_example_kernel" = xyes)
+dnl Build the example Multiboot kernel (if possible on this host)
+AC_CANONICAL_HOST
+case "$host" in #(
+  i[3456]86-*) kernel_boot_arch=i386
+               ;; #(
+  x86_64-*)    kernel_boot_arch=i386
+               kernel_ccasflags="-m32"
+               kernel_cflags="-m32"
+	       ;; #(
+  mips-*)      kernel_boot_arch=mips
+               ;; #(
+  *)           kernel_boot_arch=unsupported
+               ;;
+esac
+AC_SUBST([kernel_boot_arch])
+AC_SUBST([kernel_ccasflags])
+AC_SUBST([kernel_cflags])
+
+AC_ARG_ENABLE([example-kernel], [dnl
+AS_HELP_STRING([--enable-example-kernel],
+               [build the example Multiboot2 kernel])])
+
+AM_CONDITIONAL([BUILD_EXAMPLE_KERNEL],
+               [test "x$enable_example_kernel" = xyes && test "x$kernel_boot_arch" != "xunsupported"])
 
 dnl Because recent automake complains about CCASFLAGS, set it here.
 CCASFLAGS='$(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)'
